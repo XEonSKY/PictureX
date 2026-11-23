@@ -57,7 +57,7 @@ PX_DESKTOP_WEB_URL=http://localhost:3000 pnpm desktop:dev:web
 pnpm desktop:build         # 先完整编译（等同上面的桌面构建）
 pnpm desktop:dist          # 在 desktop:build 基础上生成 Windows x64 NSIS
 pnpm desktop:dist:linux    # Linux x64 AppImage
-pnpm desktop:dist:mac      # macOS arm64 dmg + zip
+pnpm desktop:dist:mac      # macOS arm64 dmg
 ```
 
 Linux / macOS 安装包需要在对应平台构建（CI 已覆盖），
@@ -71,7 +71,7 @@ macOS 只发布 arm64（Apple Silicon），不再提供 x64 构建。
 | --- | --- |
 | Windows | `PictureX-<version>-win-x64-setup.exe` |
 | Linux | `PictureX-<version>-linux-x64.AppImage` |
-| macOS | `PictureX-<version>-mac-<arch>.dmg` / `.zip` |
+| macOS | `PictureX-<version>-mac-<arch>.dmg` |
 
 - `scripts/run-electron.mjs` 与 `scripts/electron-builder.mjs` 会设置
   `ELECTRON_MIRROR` 与 `ELECTRON_BUILDER_BINARIES_MIRROR`，二进制走 npmmirror。
@@ -88,10 +88,8 @@ macOS 只发布 arm64（Apple Silicon），不再提供 x64 构建。
 1. `guard` 校验标签提交是否在 `main` 上，不在则直接失败。
 2. 版本号从标签推导（`v0.2.0` → `0.2.0`），同步根、Web、桌面端与 CLI 四个
    `package.json`。
-3. 三个矩阵任务分别构建 Windows x64、Linux x64、macOS arm64，
-   每个任务同时产出当前平台的 npm tarball（含平台相关原生模块）。
-4. 汇总为 GitHub Release，附件包括三个平台安装包与三个 npm tarball，
-   npm tarball 命名带平台/架构后缀。
+3. 三个矩阵任务分别构建 Windows x64（NSIS）、Linux x64（AppImage）、macOS arm64（dmg）。
+4. 汇总为 GitHub Release，附件只包含三个平台的安装包（含 `.blockmap`）。
 
 ## 文档站点（GitHub Pages）
 

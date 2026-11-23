@@ -98,22 +98,6 @@ jobs:
       - name: Build installer
         run: pnpm desktop:${{ matrix.dist }}
 
-      - name: Pack npm tarball
-        shell: bash
-        run: |
-          pnpm pack:npm
-          node -e "
-          const fs = require('fs');
-          const path = require('path');
-          const file = fs.readdirSync('dist').find(name => name.endsWith('.tgz'));
-          if (!file) { throw new Error('npm tarball not found'); }
-          const version = require('./package.json').version;
-          fs.renameSync(path.join('dist', file), path.join('dist', 'xeonsky-picturex-npm-' + process.env.MATRIX_PLATFORM + '-' + process.env.MATRIX_ARCH + '-' + version + '.tgz'));
-          "
-        env:
-          MATRIX_PLATFORM: ${{ matrix.platform }}
-          MATRIX_ARCH: ${{ matrix.arch }}
-
       - uses: actions/upload-artifact@v4
         with:
           name: picturex-${{ matrix.platform }}-${{ matrix.arch }}
@@ -121,11 +105,9 @@ jobs:
           path: |
             dist/desktop/*.exe
             dist/desktop/*.dmg
-            dist/desktop/*.zip
             dist/desktop/*.AppImage
             dist/desktop/*.blockmap
             dist/desktop/latest*.yml
-            dist/*.tgz
           if-no-files-found: error
           retention-days: 3
 
