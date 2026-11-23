@@ -33,6 +33,7 @@ jobs:
     name: build ${{ matrix.platform }}-${{ matrix.arch }}
     needs: guard
     runs-on: ${{ matrix.runner }}
+    timeout-minutes: 45
     strategy:
       fail-fast: false
       matrix:
@@ -80,7 +81,24 @@ jobs:
           "
 
       - name: Install
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --prefer-offline
+
+      # 省下每个平台一次 80MB 的 ffmpeg 镜像下载
+      - name: Cache ffmpeg
+        uses: actions/cache@v4
+        with:
+          path: node_modules/ffmpeg-static/ffmpeg
+          key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
+
+      # NSIS / dmg 等打包工具链下载缓存，跨运行复用
+      - name: Cache electron-builder
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/electron-builder
+            ~/Library/Caches/electron-builder
+            ~/AppData/Local/electron-builder/Cache
+          key: electron-builder-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - name: Build installer
         run: pnpm desktop:${{ matrix.dist }}
@@ -117,11 +135,13 @@ jobs:
             dist/desktop/*.yml
             dist/*.tgz
           if-no-files-found: error
+          retention-days: 3
 
   release:
     name: publish release
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/download-artifact@v4
         with:
