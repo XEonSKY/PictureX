@@ -27,11 +27,10 @@ const clearBodySchema = z.object({
 export const jobRoutes = new Hono<AppEnv>()
     .get('/', validateQuery(listQuerySchema), (c) => {
         const { type, limit, albumId } = c.req.valid('query');
-        const views = listJobViews(albumId, limit);
+        // type 下推到查询层：只读对应任务表，并让 limit 仍然表示该类型的条数
+        const views = listJobViews(albumId, limit, type);
 
-        return c.json({
-            data: (type ? views.filter(view => view.type === type) : views).slice(0, limit),
-        });
+        return c.json({ data: views.slice(0, limit) });
     })
     .get('/disk', (c) => {
         return c.json({ data: collectDiskActivity() });

@@ -120,7 +120,8 @@ event: ping
 data: ...
 ```
 
-进度事件按模型 250ms 节流。
+进度事件按模型 250ms 节流；响应带 `cache-control: no-cache, no-transform` 与
+`x-accel-buffering: no`，避免代理缓冲进度。
 
 ## 错误
 

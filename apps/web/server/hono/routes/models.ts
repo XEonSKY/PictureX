@@ -71,6 +71,10 @@ export const modelRoutes = new Hono<AppEnv>()
     .get('/events', (c) => {
         const downloader = modelDownloader();
 
+        // 与 /jobs/events 一致：反向代理/网关不能缓冲区事件流，否则进度整段延迟
+        c.header('cache-control', 'no-cache, no-transform');
+        c.header('x-accel-buffering', 'no');
+
         return streamSSE(c, async (stream) => {
             let closed = false;
             const lastSent = new Map<string, { at: number, status: string }>();
