@@ -84,8 +84,7 @@
             "entitlements": "resources/entitlements.mac.plist",
             "entitlementsInherit": "resources/entitlements.mac.plist",
             "target": [
-                "dmg",
-                "zip"
+                "dmg"
             ]
         },
         "dmg": {
