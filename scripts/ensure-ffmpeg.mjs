@@ -6,7 +6,7 @@
  * 因此 pnpm-workspace.yaml 不再白名单它的构建脚本，改由本脚本从 npmmirror 下载。
  * 下载失败只告警：ffmpeg 只影响视频缩略图/元数据，应用其余功能不受影响。
  */
-import { createWriteStream, existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
+import { chmodSync, createWriteStream, existsSync, mkdirSync, rmSync, statSync } from 'node:fs';
 import { dirname } from 'node:path';
 import { createRequire } from 'node:module';
 import { pipeline } from 'node:stream/promises';
@@ -47,7 +47,29 @@ function isUsableBinary(file) {
     }
 }
 
+/**
+ * 非 Windows 平台补可执行位。
+ *
+ * pnpm 不运行 ffmpeg-static 的 install 脚本，二进制由本脚本下载；
+ * createWriteStream 建出的文件默认 0644，直接 spawn 会 EACCES（Linux CI 实测）。
+ */
+function ensureExecutable(file) {
+    if (process.platform === 'win32') {
+        return;
+    }
+
+    try {
+        if ((statSync(file).mode & 0o111) === 0) {
+            chmodSync(file, 0o755);
+        }
+    }
+    catch {
+        // 文件缺失或权限不足时交给后续流程处理
+    }
+}
+
 if (existsSync(binaryPath) && isUsableBinary(binaryPath)) {
+    ensureExecutable(binaryPath);
     process.stdout.write('[ffmpeg] 已就绪\n');
     process.exit(0);
 }
@@ -83,6 +105,7 @@ try {
     rmSync(binaryPath, { force: true });
     const { renameSync } = await import('node:fs');
     renameSync(tempPath, binaryPath);
+    ensureExecutable(binaryPath);
     process.stdout.write('[ffmpeg] 下载完成\n');
 }
 catch (error) {
