@@ -150,7 +150,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 25
     permissions:
-      contents: write
+      contents: read
       pages: write
       id-token: write
     environment:
@@ -189,46 +189,13 @@ jobs:
           path: incoming
           merge-multiple: true
 
-      # update-store 只保留当前两个通道的文件；用 orphan 提交避免二进制历史膨胀
-      - name: Checkout update feeds
-        uses: actions/checkout@v7
-        with:
-          ref: update-store
-          path: update-store
-        continue-on-error: true
-
-      - name: Update feed store
-        shell: bash
-        env:
-          CHANNEL: ${{ steps.channel.outputs.name }}
+      # 安装包超过 GitHub 100MB 单文件限制，Pages 只托管元数据，URL 指向 Release 资产
+      - name: Prepare update feed
         run: |
-          set -euo pipefail
-          if [ ! -d update-store/.git ]; then
-            rm -rf update-store
-            mkdir update-store
-            git -C update-store init -b update-store
-          fi
-          git -C update-store config user.name 'github-actions[bot]'
-          git -C update-store config user.email 'github-actions[bot]@users.noreply.github.com'
-          rm -rf "update-store/${CHANNEL}"
-          mkdir -p "update-store/${CHANNEL}"
-          cp -R incoming/. "update-store/${CHANNEL}/"
-          if git -C update-store rev-parse --verify HEAD >/dev/null 2>&1; then
-            git -C update-store checkout --orphan "store-${GITHUB_RUN_ID}"
-          fi
-          git -C update-store add -A
-          git -C update-store commit -m "updates: ${CHANNEL} ${GITHUB_REF_NAME}"
-          git -C update-store branch -M update-store
-          git -C update-store push --force origin update-store
-
-      - name: Merge update feeds
-        run: |
-          mkdir -p docs/.vitepress/dist/update
-          for channel in latest pre; do
-            if [ -d "update-store/$channel" ]; then
-              cp -r "update-store/$channel" "docs/.vitepress/dist/update/$channel"
-            fi
-          done
+          node scripts/prepare-update-feed.mjs \
+            --from incoming \
+            --out "docs/.vitepress/dist/update/${{ steps.channel.outputs.name }}" \
+            --tag "$GITHUB_REF_NAME"
 
       - uses: actions/upload-pages-artifact@v5
         with:

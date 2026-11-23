@@ -45,21 +45,24 @@ jobs:
       - name: Build docs
         run: pnpm docs:build
 
-      # update-store 由 Release 工作流维护；首次发布前不存在，缺失时跳过
-      - name: Checkout update feeds
-        uses: actions/checkout@v7
-        with:
-          ref: update-store
-          path: update-store
-        continue-on-error: true
-
-      - name: Merge update feeds
+      # 从最近一次正式版/预发行版下载 latest*.yml，改写成绝对 Release 下载地址
+      - name: Prepare update feeds
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          mkdir -p docs/.vitepress/dist/update
-          for channel in latest pre; do
-            if [ -d "update-store/$channel" ]; then
-              cp -r "update-store/$channel" "docs/.vitepress/dist/update/$channel"
+          set -euo pipefail
+          latest=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName,isPrerelease --jq '[.[] | select(.isPrerelease == false)][0].tagName // ""')
+          pre=$(gh release list --repo "$GITHUB_REPOSITORY" --limit 100 --json tagName,isPrerelease --jq '[.[] | select(.isPrerelease == true)][0].tagName // ""')
+          for pair in "latest:$latest" "pre:$pre"; do
+            channel=${pair%%:*}
+            tag=${pair#*:}
+            if [ -z "$tag" ]; then
+              echo "[update-feed] 跳过 $channel：没有对应 release"
+              continue
             fi
+            mkdir -p "update-src/$channel"
+            gh release download "$tag" --repo "$GITHUB_REPOSITORY" --pattern 'latest*.yml' --pattern '*.blockmap' --dir "update-src/$channel" --clobber
+            node scripts/prepare-update-feed.mjs --from "update-src/$channel" --out "docs/.vitepress/dist/update/$channel" --tag "$tag"
           done
 
       - uses: actions/upload-pages-artifact@v5

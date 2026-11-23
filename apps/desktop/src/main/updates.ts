@@ -36,7 +36,12 @@ export function setupAutoUpdates(): void {
         return;
     }
 
-    autoUpdater.setFeedURL({ provider: 'generic', url: resolveFeedUrl() });
+    // GitHub 资产下载会重定向，多段 Range 容易卡住，改为单段
+    autoUpdater.setFeedURL({
+        provider: 'generic',
+        url: resolveFeedUrl(),
+        useMultipleRangeRequest: false,
+    });
 
     // 预下载：发现更新后直接后台下载，不打断用户
     autoUpdater.autoDownload = true;
