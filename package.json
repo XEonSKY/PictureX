@@ -1,0 +1,54 @@
+{
+    "name": "@xeonsky/picturex",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "description": "PictureX —— 本地优先、支持 i18n 与运行时换肤的 AI 相册",
+    "packageManager": "pnpm@12.21.0",
+    "engines": {
+        "node": ">=26.0.0"
+    },
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev": "node scripts/task.mjs apps/web dev",
+        "build": "node scripts/task.mjs apps/web build",
+        "preview": "node scripts/task.mjs apps/web preview",
+        "postinstall": "node scripts/task.mjs apps/web postinstall && node scripts/ensure-ffmpeg.mjs",
+        "bootstrap": "node scripts/task.mjs apps/web postinstall",
+        "clean": "node scripts/clean.mjs",
+        "check": "pnpm check:tokens && pnpm check:i18n && pnpm check:hardcode && pnpm check:docs",
+        "check:tokens": "node scripts/generate-tokens.mjs --check",
+        "check:i18n": "node scripts/check-i18n-errors.mjs",
+        "check:hardcode": "node scripts/check-hardcode.mjs",
+        "check:docs": "node scripts/check-docs-links.mjs",
+        "lint": "eslint packages/cli scripts && node scripts/task.mjs apps/web lint && node scripts/task.mjs apps/desktop lint",
+        "typecheck": "node scripts/task.mjs apps/web typecheck && node scripts/task.mjs apps/desktop typecheck",
+        "test": "node scripts/task.mjs apps/web test",
+        "test:coverage": "node scripts/task.mjs apps/web test:coverage",
+        "verify": "pnpm check && pnpm bootstrap && pnpm lint && pnpm typecheck && pnpm test",
+        "tokens:gen": "node scripts/generate-tokens.mjs",
+        "logo:gen": "node scripts/generate-logo.mjs",
+        "bench:ingest": "node scripts/benchmark-ingest.mjs",
+        "antdv": "node scripts/task.mjs apps/web antdv",
+        "build:npm": "node scripts/task.mjs apps/web build && node packages/cli/scripts/build-npm-package.mjs",
+        "pack:npm": "npm pack ./dist/package --pack-destination dist",
+        "desktop:dev": "node scripts/task.mjs apps/desktop dev",
+        "desktop:dev:web": "node scripts/task.mjs apps/desktop dev:web",
+        "desktop:build": "pnpm build:npm && node scripts/task.mjs apps/desktop build",
+        "desktop:dist": "pnpm desktop:build && node scripts/task.mjs apps/desktop dist:win",
+        "desktop:dist:linux": "pnpm desktop:build && node scripts/task.mjs apps/desktop dist:linux",
+        "desktop:dist:mac": "pnpm desktop:build && node scripts/task.mjs apps/desktop dist:mac",
+        "docs:dev": "vitepress dev docs",
+        "docs:build": "vitepress build docs",
+        "docs:preview": "vitepress preview docs"
+    },
+    "devDependencies": {
+        "@stylistic/eslint-plugin": "^6.0.1",
+        "eslint": "^10.15.0",
+        "vitepress": "^1.6.4",
+        "yaml": "^2.9.1"
+    }
+}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-labelledby="picturex-title">
+    <title id="picturex-title">PictureX</title>
+    <defs>
+        <linearGradient id="px-brand" x1="8" y1="4" x2="56" y2="60" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#0A59F7"/>
+            <stop offset="1" stop-color="#317AF7"/>
+        </linearGradient>
+        <clipPath id="px-clip">
+            <rect width="64" height="64" rx="16"/>
+        </clipPath>
+    </defs>
+    <g clip-path="url(#px-clip)">
+        <rect width="64" height="64" fill="url(#px-brand)"/>
+        <circle cx="32" cy="32" r="23" fill="none" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="1.5"/>
+        <rect x="15.5" y="17.5" width="33" height="29" rx="7" fill="none" stroke="#FFFFFF" stroke-width="3.2"/>
+        <circle cx="25.5" cy="27" r="3" fill="#FFFFFF"/>
+        <path d="M19.6 41.2 27 32.4 31.6 37.6 36.9 30.8 44.4 41.2Z" fill="#FFFFFF"/>
+    </g>
+</svg>

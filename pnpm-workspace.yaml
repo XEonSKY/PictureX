@@ -1,0 +1,33 @@
+packages:
+    - 'apps/*'
+    - 'packages/*'
+
+# 生命周期脚本必须运行在 Node 26 基线上（pnpm 10+ 的设置在 workspace 文件内）
+nodeVersion: 26.13.1
+
+# Windows 下 junction 型虚拟 store 在本机不稳定，改用 hoisted 平坦布局
+nodeLinker: hoisted
+
+# 包存储固定在仓库内（相对 workspace 根解析），避免 pnpm 默认往分区根写 <盘符>:\.pnpm-store
+storeDir: .pnpm-store
+
+# 允许执行构建脚本的依赖白名单（pnpm 12 默认拒绝未声明的构建脚本）
+allowBuilds:
+    esbuild: true
+    electron: true
+    electron-winstaller: true
+    unrs-resolver: true
+    better-sqlite3: true
+    onnxruntime-node: true
+    protobufjs: true
+    sharp: true
+    # install 脚本直连 GitHub，国内网络不可用；由 scripts/ensure-ffmpeg.mjs 走镜像补齐
+    ffmpeg-static: false
+
+# @huggingface/transformers 4.3.2 精确锁定 onnxruntime-node 1.30.0，与直接依赖的 1.31.1
+# 同时加载会因 onnxruntime-common 单例版本不一致报“API version 31 not available”。统一到 1.31.1。
+overrides:
+    onnxruntime-node: 1.31.1
+
+minimumReleaseAgeExclude:
+    - hono@4.13.20

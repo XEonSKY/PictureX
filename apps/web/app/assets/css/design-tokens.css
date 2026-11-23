@@ -1,0 +1,231 @@
+/*
+ * design-tokens.css —— 自动生成，请勿手改。
+ * 源文件：apps/web/shared/theme-tokens.json
+ * 重新生成：pnpm tokens:gen
+ *
+ * 命名：--px-<类别>-<语义>
+ * 带 @themable 注释标记的 Token 允许用户在设置页覆盖。
+ */
+
+:root,
+[data-theme="light"] {
+    color-scheme: light;
+    --px-font-family-base: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+    --px-font-family-mono: 'SFMono-Regular', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    --px-font-family-symbol: 'HarmonyOS Symbol', 'HarmonyOS Sans SC', sans-serif;
+    --px-font-size-display: 56px;
+    --px-font-size-title-lg: 30px;
+    --px-font-size-title: 24px;
+    --px-font-size-subtitle: 18px;
+    --px-font-size-body-lg: 16px;
+    /* @themable */
+    --px-font-size-body: 14px;
+    --px-font-size-caption: 12px;
+    --px-font-size-micro: 10px;
+    --px-font-weight-regular: 400;
+    --px-font-weight-medium: 500;
+    --px-font-weight-semibold: 600;
+    --px-font-weight-bold: 700;
+    --px-line-height-tight: 1.2;
+    --px-line-height-normal: 1.5;
+    --px-line-height-relaxed: 1.7;
+    --px-letter-spacing-tight: -0.02em;
+    --px-letter-spacing-normal: 0;
+    --px-letter-spacing-wide: 0.08em;
+    --px-border-width: 1px;
+    --px-blur-surface: 18px;
+    --px-space-1: 4px;
+    --px-space-2: 8px;
+    --px-space-3: 12px;
+    --px-space-4: 16px;
+    --px-space-5: 20px;
+    --px-space-6: 24px;
+    --px-space-8: 32px;
+    --px-space-10: 40px;
+    --px-space-12: 48px;
+    --px-space-16: 64px;
+    --px-radius-xs: 4px;
+    /* @themable */
+    --px-radius-sm: 8px;
+    /* @themable */
+    --px-radius-md: 16px;
+    --px-radius-lg: 20px;
+    --px-radius-xl: 32px;
+    --px-radius-full: 999px;
+    --px-motion-duration-fast: 120ms;
+    --px-motion-duration-base: 200ms;
+    --px-motion-duration-slow: 320ms;
+    --px-motion-easing-standard: cubic-bezier(0.40, 0.00, 0.20, 1.00);
+    --px-motion-easing-emphasized: cubic-bezier(0.00, 0.00, 0.40, 1.00);
+    --px-motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+    --px-layout-sidebar-width: 240px;
+    --px-layout-header-height: 56px;
+    --px-layout-content-max: 2220px;
+    --px-layout-breakpoint-sm: 600px;
+    --px-layout-breakpoint-md: 840px;
+    --px-layout-breakpoint-lg: 1280px;
+    --px-layout-touch-target: 40px;
+    --px-control-height-sm: 28px;
+    --px-control-height: 40px;
+    --px-control-height-lg: 48px;
+    --px-z-scrollbar: 950;
+    --px-z-dropdown: 1000;
+    --px-z-modal: 1100;
+    --px-z-toast: 1200;
+    --px-layout-content-narrow: 1080px;
+    --px-layout-measure: 640px;
+    --px-layout-card-min: 280px;
+    --px-layout-tile-min: 200px;
+    --px-radius-button-sm: 14px;
+    --px-layout-sidebar-rail: 96px;
+    /* @themable */
+    --px-color-brand: #0A59F7;
+    /* @themable */
+    --px-color-brand-hover: #317AF7;
+    --px-color-brand-active: #0A46C4;
+    --px-color-brand-soft: rgba(10, 89, 247, 0.12);
+    --px-color-brand-softer: rgba(10, 89, 247, 0.06);
+    /* @themable */
+    --px-color-success: #64BB5C;
+    /* @themable */
+    --px-color-warning: #ED6F21;
+    /* @themable */
+    --px-color-danger: #E84026;
+    --px-color-info: #0A59F7;
+    /* @themable */
+    --px-color-text-primary: rgba(0, 0, 0, 0.9);
+    /* @themable */
+    --px-color-text-secondary: rgba(0, 0, 0, 0.6);
+    --px-color-text-tertiary: rgba(0, 0, 0, 0.4);
+    --px-color-text-fourth: rgba(0, 0, 0, 0.2);
+    --px-color-text-inverse: rgba(255, 255, 255, 0.94);
+    /* @themable */
+    --px-color-bg-page: #F1F3F5;
+    /* @themable */
+    --px-color-bg-surface: #FFFFFF;
+    --px-color-bg-elevated: #FFFFFF;
+    --px-color-bg-sunken: #E5E5EA;
+    --px-color-bg-hover: rgba(0, 0, 0, 0.05);
+    --px-color-bg-pressed: rgba(0, 0, 0, 0.1);
+    --px-color-border: rgba(0, 0, 0, 0.05);
+    --px-color-border-strong: rgba(0, 0, 0, 0.12);
+    --px-color-mask: rgba(0, 0, 0, 0.2);
+    --px-color-selection: rgba(10, 89, 247, 0.18);
+    --px-color-scrollbar: rgba(0, 0, 0, 0.2);
+    --px-color-scrollbar-hover: rgba(0, 0, 0, 0.32);
+    --px-color-scrollbar-active: rgba(0, 0, 0, 0.4);
+    --px-shadow-surface: 0 10px 30px rgba(20, 40, 80, 0.06);
+    --px-shadow-float: 0 18px 48px rgba(20, 40, 80, 0.14);
+    --px-shadow-modal: 0 24px 64px rgba(20, 40, 80, 0.18);
+}
+
+[data-theme="dark"] {
+    color-scheme: dark;
+    --px-font-family-base: 'HarmonyOS Sans SC', 'HarmonyOS Sans', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+    --px-font-family-mono: 'SFMono-Regular', 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    --px-font-family-symbol: 'HarmonyOS Symbol', 'HarmonyOS Sans SC', sans-serif;
+    --px-font-size-display: 56px;
+    --px-font-size-title-lg: 30px;
+    --px-font-size-title: 24px;
+    --px-font-size-subtitle: 18px;
+    --px-font-size-body-lg: 16px;
+    /* @themable */
+    --px-font-size-body: 14px;
+    --px-font-size-caption: 12px;
+    --px-font-size-micro: 10px;
+    --px-font-weight-regular: 400;
+    --px-font-weight-medium: 500;
+    --px-font-weight-semibold: 600;
+    --px-font-weight-bold: 700;
+    --px-line-height-tight: 1.2;
+    --px-line-height-normal: 1.5;
+    --px-line-height-relaxed: 1.7;
+    --px-letter-spacing-tight: -0.02em;
+    --px-letter-spacing-normal: 0;
+    --px-letter-spacing-wide: 0.08em;
+    --px-border-width: 1px;
+    --px-blur-surface: 18px;
+    --px-space-1: 4px;
+    --px-space-2: 8px;
+    --px-space-3: 12px;
+    --px-space-4: 16px;
+    --px-space-5: 20px;
+    --px-space-6: 24px;
+    --px-space-8: 32px;
+    --px-space-10: 40px;
+    --px-space-12: 48px;
+    --px-space-16: 64px;
+    --px-radius-xs: 4px;
+    /* @themable */
+    --px-radius-sm: 8px;
+    /* @themable */
+    --px-radius-md: 16px;
+    --px-radius-lg: 20px;
+    --px-radius-xl: 32px;
+    --px-radius-full: 999px;
+    --px-motion-duration-fast: 120ms;
+    --px-motion-duration-base: 200ms;
+    --px-motion-duration-slow: 320ms;
+    --px-motion-easing-standard: cubic-bezier(0.40, 0.00, 0.20, 1.00);
+    --px-motion-easing-emphasized: cubic-bezier(0.00, 0.00, 0.40, 1.00);
+    --px-motion-easing-exit: cubic-bezier(0.4, 0, 1, 1);
+    --px-layout-sidebar-width: 240px;
+    --px-layout-header-height: 56px;
+    --px-layout-content-max: 2220px;
+    --px-layout-breakpoint-sm: 600px;
+    --px-layout-breakpoint-md: 840px;
+    --px-layout-breakpoint-lg: 1280px;
+    --px-layout-touch-target: 40px;
+    --px-control-height-sm: 28px;
+    --px-control-height: 40px;
+    --px-control-height-lg: 48px;
+    --px-z-scrollbar: 950;
+    --px-z-dropdown: 1000;
+    --px-z-modal: 1100;
+    --px-z-toast: 1200;
+    --px-layout-content-narrow: 1080px;
+    --px-layout-measure: 640px;
+    --px-layout-card-min: 280px;
+    --px-layout-tile-min: 200px;
+    --px-radius-button-sm: 14px;
+    --px-layout-sidebar-rail: 96px;
+    /* @themable */
+    --px-color-brand: #317AF7;
+    /* @themable */
+    --px-color-brand-hover: #4A8CF8;
+    --px-color-brand-active: #245FC4;
+    --px-color-brand-soft: rgba(49, 122, 247, 0.18);
+    --px-color-brand-softer: rgba(49, 122, 247, 0.1);
+    /* @themable */
+    --px-color-success: #5BA854;
+    /* @themable */
+    --px-color-warning: #DB6B42;
+    /* @themable */
+    --px-color-danger: #D94838;
+    --px-color-info: #317AF7;
+    /* @themable */
+    --px-color-text-primary: rgba(255, 255, 255, 0.9);
+    /* @themable */
+    --px-color-text-secondary: rgba(255, 255, 255, 0.6);
+    --px-color-text-tertiary: rgba(255, 255, 255, 0.4);
+    --px-color-text-fourth: rgba(255, 255, 255, 0.2);
+    --px-color-text-inverse: rgba(255, 255, 255, 0.94);
+    /* @themable */
+    --px-color-bg-page: #191A1C;
+    /* @themable */
+    --px-color-bg-surface: #202224;
+    --px-color-bg-elevated: #26282B;
+    --px-color-bg-sunken: #141517;
+    --px-color-bg-hover: rgba(255, 255, 255, 0.05);
+    --px-color-bg-pressed: rgba(255, 255, 255, 0.1);
+    --px-color-border: rgba(255, 255, 255, 0.06);
+    --px-color-border-strong: rgba(255, 255, 255, 0.14);
+    --px-color-mask: rgba(0, 0, 0, 0.2);
+    --px-color-selection: rgba(49, 122, 247, 0.28);
+    --px-color-scrollbar: rgba(255, 255, 255, 0.2);
+    --px-color-scrollbar-hover: rgba(255, 255, 255, 0.32);
+    --px-color-scrollbar-active: rgba(255, 255, 255, 0.4);
+    --px-shadow-surface: 0 10px 30px rgba(0, 0, 0, 0.4);
+    --px-shadow-float: 0 18px 48px rgba(0, 0, 0, 0.55);
+    --px-shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.65);
+}

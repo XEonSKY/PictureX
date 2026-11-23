@@ -1,0 +1,111 @@
+{
+    "name": "@xeonsky/picturex-desktop",
+    "productName": "PictureX",
+    "version": "0.1.0",
+    "private": true,
+    "description": "PictureX 桌面版：本地优先的 AI 相册，支持双重去重、相似分组、智能打标与图片/视频查看器",
+    "author": "XEonSKY Studio",
+    "license": "UNLICENSED",
+    "engines": {
+        "node": ">=26.0.0"
+    },
+    "main": "./out/main/index.js",
+    "scripts": {
+        "dev": "npm run runtime:prepare && npm run build:main && node scripts/run-electron.mjs .",
+        "dev:web": "npm run build:main && node scripts/run-electron.mjs .",
+        "build:main": "tsc -p tsconfig.json",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "lint": "eslint src scripts",
+        "runtime:prepare": "node scripts/prepare-runtime.mjs",
+        "build": "npm run runtime:prepare && npm run build:main",
+        "dist:win": "npm run build && node scripts/electron-builder.mjs --win --x64",
+        "dist:linux": "npm run build && node scripts/electron-builder.mjs --linux --x64",
+        "dist:mac": "npm run build && node scripts/electron-builder.mjs --mac",
+        "dist:mac:x64": "npm run build && node scripts/electron-builder.mjs --mac --x64",
+        "dist:mac:arm64": "npm run build && node scripts/electron-builder.mjs --mac --arm64"
+    },
+    "devDependencies": {
+        "@electron/notarize": "^3.1.2",
+        "@stylistic/eslint-plugin": "^6.0.1",
+        "@types/node": "^26.6.6",
+        "electron": "45.4.1",
+        "electron-builder": "^26.18.0",
+        "eslint": "^10.15.0",
+        "tar": "^7.5.23",
+        "typescript": "^6.0.3",
+        "typescript-eslint": "^8.73.0"
+    },
+    "build": {
+        "appId": "com.xeonsky.picturex",
+        "productName": "PictureX",
+        "executableName": "picturex",
+        "artifactName": "PictureX-${version}-${os}-${arch}.${ext}",
+        "directories": {
+            "output": "../../dist/desktop",
+            "buildResources": "resources"
+        },
+        "files": [
+            "out/main/**/*",
+            "out/preload/**/*",
+            "resources/splash.html",
+            "resources/icon.png",
+            "!**/*.map"
+        ],
+        "extraResources": [
+            {
+                "from": "runtime",
+                "to": "runtime"
+            }
+        ],
+        "asar": true,
+        "win": {
+            "icon": "resources/icon.png",
+            "target": [
+                {
+                    "target": "nsis",
+                    "arch": [
+                        "x64"
+                    ]
+                }
+            ]
+        },
+        "nsis": {
+            "oneClick": false,
+            "perMachine": true,
+            "menuCategory": "XEonSKY",
+            "allowToChangeInstallationDirectory": true,
+            "shortcutName": "PictureX",
+            "artifactName": "PictureX-${version}-win-${arch}-setup.${ext}"
+        },
+        "afterSign": "scripts/notarize.cjs",
+        "mac": {
+            "icon": "resources/icon.png",
+            "category": "public.app-category.photography",
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "resources/entitlements.mac.plist",
+            "entitlementsInherit": "resources/entitlements.mac.plist",
+            "target": [
+                "dmg",
+                "zip"
+            ]
+        },
+        "dmg": {
+            "artifactName": "PictureX-${version}-mac-${arch}.${ext}"
+        },
+        "linux": {
+            "icon": "resources/icon.png",
+            "category": "Graphics",
+            "executableName": "picturex",
+            "target": [
+                "AppImage"
+            ]
+        },
+        "appImage": {
+            "artifactName": "PictureX-${version}-linux-${arch}.${ext}"
+        }
+    },
+    "dependencies": {
+        "electron-updater": "^6.8.11"
+    }
+}

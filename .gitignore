@@ -1,0 +1,54 @@
+# 依赖
+node_modules/
+# pnpm 包存储固定在仓库内，避免写分区根
+.pnpm-store/
+
+# 开发期数据（dev 模式默认库位置）与产物
+.dev/
+
+# Nuxt / Nitro 构建产物
+.nuxt/
+.nitro/
+.cache/
+dist/
+
+# 桌面端（Electron）构建产物与临时运行时
+apps/desktop/out/
+apps/desktop/runtime/
+
+# VitePress 缓存与产物（配置与源在 docs/，产物落在 docs/.vitepress/dist）
+.vitepress/cache/
+.vitepress/dist/
+
+# 环境与密钥
+.env
+.env.*
+!.env.example
+*.jwk
+*.pem
+
+# 数据库文件
+*.db
+*.sqlite
+*.sqlite3
+
+# 数据目录单写者锁（自定义数据目录落在仓库内时）
+.picturex.lock
+
+# 本地数据目录
+data/
+
+# 日志与系统
+*.log
+.DS_Store
+Thumbs.db
+coverage/
+
+# npm 包产物
+*.tgz
+.screenshots
+
+# AI 协作文档只保留本地，不进入版本库
+AGENTS.md
+.agents/
+docs/guide/subagents.md
