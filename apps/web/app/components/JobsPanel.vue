@@ -4,6 +4,7 @@ import {
     DatabaseOutlined,
     DeleteOutlined,
     FireOutlined,
+    HddOutlined,
     PauseCircleOutlined,
     PictureOutlined,
     PlayCircleOutlined,

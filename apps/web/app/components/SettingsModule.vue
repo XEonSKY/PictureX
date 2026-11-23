@@ -25,20 +25,26 @@ onMounted(() => {
                     {{ subtitle }}
                 </p>
             </div>
-            <a-button :aria-label="t('common.refresh')" @click="load(true)">
+            <a-button :aria-label="t('common.refresh')" :loading="loading" @click="load(true)">
                 <template #icon>
                     <ReloadOutlined />
                 </template>
             </a-button>
         </header>
 
-        <a-alert v-if="error" type="error" show-icon closable :message="error" @close="error = ''" />
+        <a-alert v-if="error" type="error" show-icon closable :message="error" @close="error = ''">
+            <template #action>
+                <a-button size="small" :loading="loading" @click="load(true)">
+                    {{ t('common.retry') }}
+                </a-button>
+            </template>
+        </a-alert>
 
-        <div v-if="loading || !loaded" class="px-loading">
+        <div v-if="loading || (!loaded && !error)" class="px-loading">
             <a-spin />
         </div>
 
-        <div v-else class="settings-module">
+        <div v-else-if="loaded" class="settings-module">
             <slot />
         </div>
     </div>

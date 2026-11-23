@@ -115,9 +115,14 @@ export function clearFinishedJobs(options: {
 /**
  * 聚合导入/AI 任务与模型下载；传入 albumId 时只读该相册的任务。
  * 查询按「最近更新优先」每表取前 limit 条，不再逐相册各查一次。
+ * 传 type 时只查对应任务表，limit 表示该类型的条数上限。
  */
-export function listJobViews(albumId = '', limit = DEFAULT_VIEW_LIMIT): JobView[] {
-    const cacheKey = `${albumId}:${limit}`;
+export function listJobViews(
+    albumId = '',
+    limit = DEFAULT_VIEW_LIMIT,
+    type?: 'import' | 'download' | 'ai',
+): JobView[] {
+    const cacheKey = `${albumId}:${limit}:${type ?? ''}`;
 
     if (cachedViews && cachedViews.key === cacheKey && Date.now() - cachedViews.at < VIEW_CACHE_MS) {
         return cachedViews.views;
@@ -151,15 +156,19 @@ export function listJobViews(albumId = '', limit = DEFAULT_VIEW_LIMIT): JobView[
 
     const views: JobView[] = [];
 
-    for (const { albumId: id, job } of listRecentImportJobs(limit, albumId || undefined)) {
-        views.push({ ...job, type: 'import', albumId: id, albumName: nameById.get(id) ?? id });
+    if (type === undefined || type === 'import') {
+        for (const { albumId: id, job } of listRecentImportJobs(limit, albumId || undefined)) {
+            views.push({ ...job, type: 'import', albumId: id, albumName: nameById.get(id) ?? id });
+        }
     }
-    for (const { albumId: id, job } of listRecentAiJobs(limit, albumId || undefined)) {
-        views.push({ ...job, type: 'ai', albumId: id, albumName: nameById.get(id) ?? id });
+    if (type === undefined || type === 'ai') {
+        for (const { albumId: id, job } of listRecentAiJobs(limit, albumId || undefined)) {
+            views.push({ ...job, type: 'ai', albumId: id, albumName: nameById.get(id) ?? id });
+        }
     }
 
     // 模型下载不属于任何相册，相册任务页不展示
-    if (!albumId) {
+    if (!albumId && (type === undefined || type === 'download')) {
         const downloader = modelDownloader();
         const models = modelRegistry(settings).list();
         const modelNames = new Map(models.map(model => [model.id, model.name]));
@@ -181,7 +190,7 @@ export function listJobViews(albumId = '', limit = DEFAULT_VIEW_LIMIT): JobView[
 
     const sorted = views.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
-    cachedViews = { key: albumId, at: Date.now(), views: sorted };
+    cachedViews = { key: cacheKey, at: Date.now(), views: sorted };
 
     return sorted;
 }

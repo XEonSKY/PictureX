@@ -32,6 +32,12 @@ const MAX_REQUEST_BODY_BYTES = 2 * 1024 * 1024;
 const LOOPBACK_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1']);
 const WILDCARD_BIND_HOSTS = new Set(['0.0.0.0', '::']);
 
+// 每个 API 请求都会校验 Host；环境变量在进程生命周期内不变，解析一次即可
+const ALLOWED_HOSTS = (process.env.PX_ALLOWED_HOSTS ?? '')
+    .split(',')
+    .map(value => value.trim().toLowerCase())
+    .filter(Boolean);
+
 // 服务实际绑定地址由启动环境决定；回环值统一按 loopback 处理。
 const BIND_HOST = (process.env.NITRO_HOST ?? process.env.HOST ?? process.env.NUXT_HOST ?? '127.0.0.1')
     .trim()
@@ -72,12 +78,7 @@ function isAllowedHost(hostHeader: string | undefined): boolean {
         return BIND_IS_WILDCARD || hostname === BIND_HOST;
     }
 
-    const extra = (process.env.PX_ALLOWED_HOSTS ?? '')
-        .split(',')
-        .map(value => value.trim().toLowerCase())
-        .filter(Boolean);
-
-    return extra.includes(hostname);
+    return ALLOWED_HOSTS.includes(hostname);
 }
 
 function originHost(origin: string): string {

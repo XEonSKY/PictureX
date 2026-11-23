@@ -1038,7 +1038,7 @@ onBeforeUnmount(() => {
                             {{ t('asset.batchManage') }}
                         </template>
                     </a-button>
-                    <a-button :aria-label="t('common.refresh')" @click="reload(true)">
+                    <a-button :aria-label="t('common.refresh')" :loading="initialLoading" @click="reload(true)">
                         <template #icon>
                             <ReloadOutlined />
                         </template>

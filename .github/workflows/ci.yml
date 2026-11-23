@@ -30,15 +30,17 @@ jobs:
           node-version: '26'
           cache: pnpm
 
-      - name: Install
-        run: pnpm install --frozen-lockfile --prefer-offline
-
-      # ffmpeg-static 不会自动下载，由 postinstall 从镜像拉取；缓存命中可省一次 80MB 下载
+      # ffmpeg-static 不会自动下载，由 postinstall 从镜像拉取。
+      # 必须在 pnpm install 之前恢复缓存：install 期间 postinstall 就会联网下载，
+      # 缓存放在 install 之后等于每次仍会下载 80MB。
       - name: Cache ffmpeg
         uses: actions/cache@v4
         with:
           path: node_modules/ffmpeg-static/ffmpeg
           key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
+
+      - name: Install
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       - name: Verify
         run: pnpm verify

@@ -2128,6 +2128,7 @@ onBeforeUnmount(() => {
 
 .viewer__icon-button {
     display: inline-flex;
+    flex: none;
     align-items: center;
     justify-content: center;
     width: var(--px-control-height);
@@ -2780,6 +2781,19 @@ onBeforeUnmount(() => {
 @media (max-width: 599px) {
     .viewer {
         margin: calc(-1 * var(--px-space-4)) calc(-1 * var(--px-space-4)) 0;
+    }
+
+    /* 工具按钮在小屏放不下时只在工具条内部滚动，不让整页出现横向滚动条 */
+    .viewer__tools {
+        flex: 0 1 auto;
+        min-width: 0;
+        overflow-x: auto;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .viewer__tools::-webkit-scrollbar {
+        display: none;
     }
 }
 </style>

@@ -320,7 +320,13 @@ onMounted(() => {
             closable
             :message="error"
             @close="error = ''"
-        />
+        >
+            <template #action>
+                <a-button size="small" @click="load">
+                    {{ t('common.retry') }}
+                </a-button>
+            </template>
+        </a-alert>
 
         <a-alert
             v-if="corruptAlbums.length > 0"

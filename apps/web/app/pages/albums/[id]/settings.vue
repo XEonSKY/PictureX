@@ -230,8 +230,18 @@ function startThumbPoll(): void {
     }
 
     thumbPoll = setInterval(() => {
-        void loadThumbStats();
+        // 后台标签页不需要 800ms 一次轮询；回到前台时由 visibilitychange 立即补一次
+        if (document.visibilityState === 'visible') {
+            void loadThumbStats();
+        }
     }, 800);
+}
+
+/** 从后台切回时立刻刷新一次缩略图进度，不必等下一个轮询周期 */
+function handleVisibility(): void {
+    if (document.visibilityState === 'visible' && thumbPoll !== null) {
+        void loadThumbStats();
+    }
 }
 
 watch(() => thumbStats.value?.warmup.status, (status) => {
@@ -452,11 +462,13 @@ onMounted(() => {
     void load(true);
     void loadSettings();
     void loadThumbStats();
+    document.addEventListener('visibilitychange', handleVisibility);
 });
 
 onBeforeUnmount(() => {
     // 组件卸载后 reader.read() 仍在消费 NDJSON 流并写已卸载组件的 ref → 中止导出
     exportAbort?.abort();
+    document.removeEventListener('visibilitychange', handleVisibility);
     stopThumbPoll();
 });
 </script>

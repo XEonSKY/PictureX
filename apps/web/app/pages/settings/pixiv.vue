@@ -197,6 +197,13 @@ async function loadFetchStatus(): Promise<void> {
     }
 }
 
+/** 从后台切回时立即刷新补全状态，避免等待下一个轮询周期 */
+function handleVisibility(): void {
+    if (document.visibilityState === 'visible') {
+        void loadFetchStatus();
+    }
+}
+
 async function pauseFetch(): Promise<void> {
     pauseBusy.value = true;
     error.value = '';
@@ -276,8 +283,12 @@ onMounted(() => {
     void loadStatus();
     void loadFetchStatus();
     fetchPollTimer = setInterval(() => {
-        void loadFetchStatus();
+        // 后台标签页暂停轮询；切回前台时立即补一次
+        if (document.visibilityState === 'visible') {
+            void loadFetchStatus();
+        }
     }, 1500);
+    document.addEventListener('visibilitychange', handleVisibility);
 });
 
 onBeforeUnmount(() => {
@@ -285,6 +296,7 @@ onBeforeUnmount(() => {
         clearInterval(fetchPollTimer);
         fetchPollTimer = null;
     }
+    document.removeEventListener('visibilitychange', handleVisibility);
 });
 </script>
 

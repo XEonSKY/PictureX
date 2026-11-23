@@ -88,14 +88,14 @@ jobs:
           }
           "
 
-      - name: Install
-        run: pnpm install --frozen-lockfile --prefer-offline
-
-      # 省下每个平台一次 80MB 的 ffmpeg 镜像下载
+      # 必须在 pnpm install 之前恢复：postinstall 会联网下载 ffmpeg，放后面等于缓存无效
       - uses: actions/cache@v4
         with:
           path: node_modules/ffmpeg-static/ffmpeg
           key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
+
+      - name: Install
+        run: pnpm install --frozen-lockfile --prefer-offline
 
       # NSIS / dmg 等打包工具链下载缓存
       - uses: actions/cache@v4
@@ -149,6 +149,10 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    # 与 docs.yml 共用 pages 组：避免两次部署同时写 GitHub Pages
+    concurrency:
+      group: pages
+      cancel-in-progress: false
     permissions:
       contents: read
       pages: write
