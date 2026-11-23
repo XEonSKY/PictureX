@@ -65,6 +65,17 @@ function clearErrors(): void {
     error.value = '';
 }
 
+async function retryLoad(): Promise<void> {
+    error.value = '';
+
+    try {
+        await Promise.all([loadTags(), loadMedia(true)]);
+    }
+    catch (loadError) {
+        error.value = errorMessage(loadError);
+    }
+}
+
 async function loadTags(): Promise<void> {
     const response = await api.viewer.tags.$get();
     const body = await response.json();
@@ -125,7 +136,13 @@ onMounted(async () => {
             closable
             :message="error"
             @close="clearErrors"
-        />
+        >
+            <template #action>
+                <a-button size="small" @click="retryLoad">
+                    {{ t('common.retry') }}
+                </a-button>
+            </template>
+        </a-alert>
 
         <section class="library-filters px-surface">
             <div class="library-tags" role="group" :aria-label="t('library.title')">
