@@ -64,6 +64,17 @@ jobs:
           node-version: '26'
           cache: pnpm
 
+      # 带 -rc/-beta/-alpha 的标签走预发行通道 pre，否则走 latest
+      - name: Resolve update channel
+        id: channel
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_NAME" =~ -(rc|beta|alpha) ]]; then
+            echo "name=pre" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=latest" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Sync version from tag
         shell: bash
         run: |
@@ -80,7 +91,7 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      # ffmpeg-static 不会自动下载，缓存可省每个平台一次 80MB 拉取
+      # 省下每个平台一次 80MB 的 ffmpeg 镜像下载
       - uses: actions/cache@v4
         with:
           path: node_modules/ffmpeg-static/ffmpeg
@@ -97,11 +108,14 @@ jobs:
 
       - name: Build installer
         run: pnpm desktop:${{ matrix.dist }}
+        env:
+          # 让 electron-builder 生成 latest*.yml 并把 feed 地址写进 app-update.yml
+          PX_UPDATE_URL: https://picturex.xeonsky.com/update/${{ steps.channel.outputs.name }}/
 
       - uses: actions/upload-artifact@v4
         with:
           name: picturex-${{ matrix.platform }}-${{ matrix.arch }}
-          # 只上传安装包；dist/desktop 下还有含完整 runtime 的未打包目录
+          # 只上传安装包与更新元数据；未打包目录含完整 runtime，体积巨大
           path: |
             dist/desktop/*.exe
             dist/desktop/*.dmg
@@ -129,3 +143,96 @@ jobs:
           files: artifacts/**
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-rc') || contains(github.ref_name, '-beta') || contains(github.ref_name, '-alpha') }}
+
+  pages:
+    name: deploy docs and updates
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.21.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+          cache: pnpm
+
+      - name: Install (docs only)
+        run: pnpm install --frozen-lockfile --ignore-scripts --prefer-offline
+
+      - name: Build docs
+        run: pnpm docs:build
+
+      - name: Resolve update channel
+        id: channel
+        shell: bash
+        run: |
+          if [[ "$GITHUB_REF_NAME" =~ -(rc|beta|alpha) ]]; then
+            echo "name=pre" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=latest" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: incoming
+          merge-multiple: true
+
+      # update-store 只保留当前两个通道的文件；用 orphan 提交避免二进制历史膨胀
+      - name: Checkout update feeds
+        uses: actions/checkout@v7
+        with:
+          ref: update-store
+          path: update-store
+        continue-on-error: true
+
+      - name: Update feed store
+        shell: bash
+        env:
+          CHANNEL: ${{ steps.channel.outputs.name }}
+        run: |
+          set -euo pipefail
+          if [ ! -d update-store/.git ]; then
+            rm -rf update-store
+            mkdir update-store
+            git -C update-store init -b update-store
+          fi
+          git -C update-store config user.name 'github-actions[bot]'
+          git -C update-store config user.email 'github-actions[bot]@users.noreply.github.com'
+          rm -rf "update-store/${CHANNEL}"
+          mkdir -p "update-store/${CHANNEL}"
+          cp -R incoming/. "update-store/${CHANNEL}/"
+          if git -C update-store rev-parse --verify HEAD >/dev/null 2>&1; then
+            git -C update-store checkout --orphan "store-${GITHUB_RUN_ID}"
+          fi
+          git -C update-store add -A
+          git -C update-store commit -m "updates: ${CHANNEL} ${GITHUB_REF_NAME}"
+          git -C update-store branch -M update-store
+          git -C update-store push --force origin update-store
+
+      - name: Merge update feeds
+        run: |
+          mkdir -p docs/.vitepress/dist/update
+          for channel in latest pre; do
+            if [ -d "update-store/$channel" ]; then
+              cp -r "update-store/$channel" "docs/.vitepress/dist/update/$channel"
+            fi
+          done
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/.vitepress/dist
+
+      - id: deployment
+        uses: actions/deploy-pages@v5

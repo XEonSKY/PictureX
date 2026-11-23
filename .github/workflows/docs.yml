@@ -8,6 +8,7 @@ on:
       - 'package.json'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
 permissions:
@@ -17,12 +18,15 @@ permissions:
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
 
@@ -41,16 +45,26 @@ jobs:
       - name: Build docs
         run: pnpm docs:build
 
+      # update-store 由 Release 工作流维护；首次发布前不存在，缺失时跳过
+      - name: Checkout update feeds
+        uses: actions/checkout@v7
+        with:
+          ref: update-store
+          path: update-store
+        continue-on-error: true
+
+      - name: Merge update feeds
+        run: |
+          mkdir -p docs/.vitepress/dist/update
+          for channel in latest pre; do
+            if [ -d "update-store/$channel" ]; then
+              cp -r "update-store/$channel" "docs/.vitepress/dist/update/$channel"
+            fi
+          done
+
       - uses: actions/upload-pages-artifact@v5
         with:
           path: docs/.vitepress/dist
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
