@@ -7,8 +7,15 @@ const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
 
 let timer: ReturnType<typeof setInterval> | null = null;
 let checking = false;
+let manualCheck = false;
+/** 已提示过安装的版本；周期性静默检查不再重复弹窗 */
+let downloadedVersion: string | null = null;
 
-/** 运行时用 PX_UPDATE_URL 指向 generic 更新目录（release 产物里的 latest.yml） */
+/**
+ * 自动更新：启动即检查，发现新版本后在后台**静默预下载**，
+ * 下载完成才询问用户是否立即重启安装（不确认就绝不安装）。
+ * 运行时用 PX_UPDATE_URL 指向 generic 更新目录（release 产物里的 latest.yml）。
+ */
 export function setupAutoUpdates(): void {
     if (!app.isPackaged) {
         return;
@@ -20,26 +27,43 @@ export function setupAutoUpdates(): void {
         autoUpdater.setFeedURL({ provider: 'generic', url: feedUrl });
     }
 
-    autoUpdater.autoDownload = false;
+    // 预下载：发现更新后直接后台下载，不打断用户
+    autoUpdater.autoDownload = true;
+    // 必须由用户确认后才安装，退出应用时不静默安装
+    autoUpdater.autoInstallOnAppQuit = false;
+
     autoUpdater.on('error', (error: Error) => {
         logMain(`update error: ${error.message}`);
     });
-    autoUpdater.on('update-available', (info: { version: string }) => {
-        const strings = shellStrings();
-        const result = dialog.showMessageBoxSync({
-            type: 'info',
-            title: strings.updateAvailableTitle,
-            message: strings.updateAvailableMessage.replace('{version}', info.version),
-            buttons: [strings.updateDownload, strings.updateLater],
-            defaultId: 0,
-            cancelId: 1,
-        });
 
-        if (result === 0) {
-            void autoUpdater.downloadUpdate();
-        }
+    autoUpdater.on('update-available', (info: { version: string }) => {
+        logMain(`update available: ${info.version}; downloading in background`);
     });
+
+    autoUpdater.on('update-not-available', (info: { version: string }) => {
+        if (!manualCheck) {
+            return;
+        }
+
+        const strings = shellStrings();
+        dialog.showMessageBoxSync({
+            type: 'info',
+            title: strings.checkUpdates,
+            message: strings.updateUpToDate.replace('{version}', info.version),
+            buttons: ['OK'],
+        });
+    });
+
     autoUpdater.on('update-downloaded', (info: { version: string }) => {
+        const repeated = downloadedVersion === info.version;
+
+        downloadedVersion = info.version;
+
+        // 后台检查对同一版本只提示一次；手动检查允许再次唤起安装确认
+        if (repeated && !manualCheck) {
+            return;
+        }
+
         const strings = shellStrings();
 
         void dialog.showMessageBox({
@@ -91,6 +115,7 @@ export async function checkForUpdates(manual = true): Promise<void> {
     }
 
     checking = true;
+    manualCheck = manual;
 
     try {
         const result = await autoUpdater.checkForUpdates();
@@ -113,5 +138,6 @@ export async function checkForUpdates(manual = true): Promise<void> {
     }
     finally {
         checking = false;
+        manualCheck = false;
     }
 }
