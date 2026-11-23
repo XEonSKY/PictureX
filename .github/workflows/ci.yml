@@ -34,7 +34,7 @@ jobs:
       # 必须在 pnpm install 之前恢复缓存：install 期间 postinstall 就会联网下载，
       # 缓存放在 install 之后等于每次仍会下载 80MB。
       - name: Cache ffmpeg
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: node_modules/ffmpeg-static/ffmpeg
           key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
