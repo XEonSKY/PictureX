@@ -106,8 +106,15 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: picturex-${{ matrix.platform }}-${{ matrix.arch }}
+          # 只上传安装包：dist/desktop 下还有未打包目录（含完整 runtime），
+          # 全量上传会产生上千个文件并触达 Release 资产上限。
           path: |
-            dist/desktop/**
+            dist/desktop/*.exe
+            dist/desktop/*.dmg
+            dist/desktop/*.zip
+            dist/desktop/*.AppImage
+            dist/desktop/*.blockmap
+            dist/desktop/*.yml
             dist/*.tgz
           if-no-files-found: error
 
