@@ -1,6 +1,6 @@
 {
     "name": "@xeonsky/picturex-cli",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "private": true,
     "type": "module",
     "description": "PictureX 命令行源码；打包产物由 scripts/build-npm-package.mjs 生成",
