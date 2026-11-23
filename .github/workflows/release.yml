@@ -6,7 +6,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release-${{ github.ref }}
@@ -16,6 +16,7 @@ jobs:
   guard:
     name: guard tag on main
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v7
         with:
@@ -46,13 +47,9 @@ jobs:
             platform: linux
             arch: x64
             dist: dist:linux
-          - runner: macos-15
+          - runner: macos-latest
             platform: mac
             arch: arm64
-            dist: dist:mac
-          - runner: macos-15-intel
-            platform: mac
-            arch: x64
             dist: dist:mac
 
     steps:
@@ -83,16 +80,14 @@ jobs:
       - name: Install
         run: pnpm install --frozen-lockfile --prefer-offline
 
-      # 省下每个平台一次 80MB 的 ffmpeg 镜像下载
-      - name: Cache ffmpeg
-        uses: actions/cache@v4
+      # ffmpeg-static 不会自动下载，缓存可省每个平台一次 80MB 拉取
+      - uses: actions/cache@v4
         with:
           path: node_modules/ffmpeg-static/ffmpeg
           key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
 
-      # NSIS / dmg 等打包工具链下载缓存，跨运行复用
-      - name: Cache electron-builder
-        uses: actions/cache@v4
+      # NSIS / dmg 等打包工具链下载缓存
+      - uses: actions/cache@v4
         with:
           path: |
             ~/.cache/electron-builder
@@ -110,12 +105,10 @@ jobs:
           node -e "
           const fs = require('fs');
           const path = require('path');
-          const dir = 'dist';
-          const file = fs.readdirSync(dir).find(name => name.endsWith('.tgz'));
+          const file = fs.readdirSync('dist').find(name => name.endsWith('.tgz'));
           if (!file) { throw new Error('npm tarball not found'); }
           const version = require('./package.json').version;
-          const target = path.join(dir, 'xeonsky-picturex-npm-' + process.env.MATRIX_PLATFORM + '-' + process.env.MATRIX_ARCH + '-' + version + '.tgz');
-          fs.renameSync(path.join(dir, file), target);
+          fs.renameSync(path.join('dist', file), path.join('dist', 'xeonsky-picturex-npm-' + process.env.MATRIX_PLATFORM + '-' + process.env.MATRIX_ARCH + '-' + version + '.tgz'));
           "
         env:
           MATRIX_PLATFORM: ${{ matrix.platform }}
@@ -124,15 +117,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: picturex-${{ matrix.platform }}-${{ matrix.arch }}
-          # 只上传安装包：dist/desktop 下还有未打包目录（含完整 runtime），
-          # 全量上传会产生上千个文件并触达 Release 资产上限。
+          # 只上传安装包；dist/desktop 下还有含完整 runtime 的未打包目录
           path: |
             dist/desktop/*.exe
             dist/desktop/*.dmg
             dist/desktop/*.zip
             dist/desktop/*.AppImage
             dist/desktop/*.blockmap
-            dist/desktop/*.yml
+            dist/desktop/latest*.yml
             dist/*.tgz
           if-no-files-found: error
           retention-days: 3
@@ -142,6 +134,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
       - uses: actions/download-artifact@v8
         with:

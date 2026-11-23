@@ -57,18 +57,13 @@ PX_DESKTOP_WEB_URL=http://localhost:3000 pnpm desktop:dev:web
 pnpm desktop:build         # 先完整编译（等同上面的桌面构建）
 pnpm desktop:dist          # 在 desktop:build 基础上生成 Windows x64 NSIS
 pnpm desktop:dist:linux    # Linux x64 AppImage
-pnpm desktop:dist:mac      # macOS 当前架构 dmg + zip
+pnpm desktop:dist:mac      # macOS arm64 dmg + zip
 ```
 
 Linux / macOS 安装包需要在对应平台构建（CI 已覆盖），
 不要把 Windows 上生成的 runtime 直接交给其它平台的 electron-builder。
 
-桌面端脚本也支持显式架构：
-
-```bash
-pnpm --dir apps/desktop run dist:mac:x64
-pnpm --dir apps/desktop run dist:mac:arm64
-```
+macOS 只发布 arm64（Apple Silicon），不再提供 x64 构建。
 
 产物位于 `dist/desktop/`：
 
@@ -93,9 +88,9 @@ pnpm --dir apps/desktop run dist:mac:arm64
 1. `guard` 校验标签提交是否在 `main` 上，不在则直接失败。
 2. 版本号从标签推导（`v0.2.0` → `0.2.0`），同步根、Web、桌面端与 CLI 四个
    `package.json`。
-3. 四个矩阵任务分别构建 Windows x64、Linux x64、macOS arm64、macOS x64，
+3. 三个矩阵任务分别构建 Windows x64、Linux x64、macOS arm64，
    每个任务同时产出当前平台的 npm tarball（含平台相关原生模块）。
-4. 汇总为 GitHub Release，附件包括三个平台安装包与四个 npm tarball，
+4. 汇总为 GitHub Release，附件包括三个平台安装包与三个 npm tarball，
    npm tarball 命名带平台/架构后缀。
 
 ## 文档站点（GitHub Pages）
