@@ -18,6 +18,9 @@ hero:
     - theme: alt
       text: API
       link: /api/albums
+    - theme: alt
+      text: 下载
+      link: https://github.com/XEonSKY/PictureX/releases/latest
 
 features:
   - title: 文件留在本地

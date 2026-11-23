@@ -18,6 +18,7 @@ export default defineConfig({
         logo: '/logo.svg',
         nav: [
             { text: '指南', link: '/guide/quickstart', activeMatch: '/guide/' },
+            { text: '下载', link: '/guide/download' },
             { text: 'API', link: '/api/albums', activeMatch: '/api/' },
             { text: '相册格式', link: '/guide/album-format' },
         ],
@@ -27,6 +28,7 @@ export default defineConfig({
                     text: '开始',
                     items: [
                         { text: '快速开始', link: '/guide/quickstart' },
+                        { text: '下载与更新', link: '/guide/download' },
                         { text: '开发', link: '/guide/development' },
                         { text: '桌面端', link: '/guide/desktop' },
                         { text: '数据目录', link: '/guide/data-dir' },

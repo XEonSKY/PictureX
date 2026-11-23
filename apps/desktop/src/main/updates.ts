@@ -4,6 +4,21 @@ import { logMain } from './log';
 import { shellStrings } from './strings';
 
 const CHECK_INTERVAL_MS = 6 * 60 * 60 * 1000;
+/** 站点上的更新目录：正式版 latest、预发行版 pre */
+const DEFAULT_FEED_BASE = 'https://picturex.xeonsky.com/update/';
+
+/** 预发行版（版本号带 -rc/-beta/-alpha）走 pre，其余走 latest；PX_UPDATE_URL 可整体覆盖。 */
+function resolveFeedUrl(): string {
+    const override = process.env.PX_UPDATE_URL?.trim();
+
+    if (override) {
+        return override;
+    }
+
+    const channel = app.getVersion().includes('-') ? 'pre' : 'latest';
+
+    return `${DEFAULT_FEED_BASE}${channel}/`;
+}
 
 let timer: ReturnType<typeof setInterval> | null = null;
 let checking = false;
@@ -21,11 +36,7 @@ export function setupAutoUpdates(): void {
         return;
     }
 
-    const feedUrl = process.env.PX_UPDATE_URL?.trim();
-
-    if (feedUrl) {
-        autoUpdater.setFeedURL({ provider: 'generic', url: feedUrl });
-    }
+    autoUpdater.setFeedURL({ provider: 'generic', url: resolveFeedUrl() });
 
     // 预下载：发现更新后直接后台下载，不打断用户
     autoUpdater.autoDownload = true;
