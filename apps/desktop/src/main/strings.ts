@@ -17,9 +17,7 @@ export interface ShellStrings {
     runtimeMissingDetail: string;
     logFolder: string;
     checkUpdates: string;
-    updateAvailableTitle: string;
-    updateAvailableMessage: string;
-    updateDownload: string;
+    updateUpToDate: string;
     updateLater: string;
     updateReadyTitle: string;
     updateReadyMessage: string;
@@ -45,12 +43,10 @@ const ZH: ShellStrings = {
     runtimeMissingDetail: '请先在仓库根目录执行 pnpm build:npm，再运行 pnpm desktop:dev；打包版请重新安装。',
     logFolder: '日志目录',
     checkUpdates: '检查更新',
-    updateAvailableTitle: '发现新版本',
-    updateAvailableMessage: 'PictureX {version} 已发布，是否下载？',
-    updateDownload: '下载',
+    updateUpToDate: '当前已是最新版本（{version}）。',
     updateLater: '稍后',
     updateReadyTitle: '更新已就绪',
-    updateReadyMessage: 'PictureX {version} 已下载，重启后安装。',
+    updateReadyMessage: 'PictureX {version} 已在后台下载完成，重启后安装。',
     updateRestart: '立即重启',
     updateNotPackaged: '开发模式不检查更新，请在安装版中试用。',
     updateFailed: '检查更新失败：{message}',
@@ -73,12 +69,10 @@ const EN: ShellStrings = {
     runtimeMissingDetail: 'Run pnpm build:npm in the repository root, then pnpm desktop:dev. Reinstall the packaged app if this persists.',
     logFolder: 'Log folder',
     checkUpdates: 'Check for Updates',
-    updateAvailableTitle: 'Update Available',
-    updateAvailableMessage: 'PictureX {version} is available. Download it now?',
-    updateDownload: 'Download',
+    updateUpToDate: 'You are up to date ({version}).',
     updateLater: 'Later',
     updateReadyTitle: 'Update Ready',
-    updateReadyMessage: 'PictureX {version} has been downloaded and will install after restart.',
+    updateReadyMessage: 'PictureX {version} has been downloaded in the background and will install after restart.',
     updateRestart: 'Restart Now',
     updateNotPackaged: 'Update checks are disabled in development mode.',
     updateFailed: 'Update check failed: {message}',
