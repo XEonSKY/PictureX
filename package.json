@@ -1,6 +1,6 @@
 {
     "name": "@xeonsky/picturex",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "type": "module",
     "description": "PictureX —— 本地优先、支持 i18n 与运行时换肤的 AI 相册",

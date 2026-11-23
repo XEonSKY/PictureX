@@ -1,7 +1,7 @@
 {
     "name": "@xeonsky/picturex-desktop",
     "productName": "PictureX",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "private": true,
     "description": "PictureX 桌面版：本地优先的 AI 相册，支持双重去重、相似分组、智能打标与图片/视频查看器",
     "author": "XEonSKY Studio",
