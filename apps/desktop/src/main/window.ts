@@ -1,5 +1,6 @@
 import { BrowserWindow, app, powerMonitor, screen, shell } from 'electron';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
 import { logMain } from './log';
 import { resourcePath, windowStatePath } from './paths';
 
@@ -263,6 +264,8 @@ export function createMainWindow(options: MainWindowOptions = {}): BrowserWindow
             sandbox: true,
             spellcheck: false,
             devTools: !app.isPackaged,
+            // 设置页「检查更新」需要主窗口桥；查看器窗口仍使用独立 preload
+            preload: path.join(__dirname, '..', 'preload', 'main.js'),
         },
     });
 

@@ -8,7 +8,8 @@ import { APP_ID, RuntimeMissingError, resolveDataDir, resolveRuntimeEntry } from
 import { startLocalServer, type LocalServer } from './server';
 import { shellStrings } from './strings';
 import { createTray, destroyTray, hasTray } from './tray';
-import { checkForUpdates, setupAutoUpdates, stopAutoUpdates } from './updates';
+import { installUpdateIpc } from './update-ipc';
+import { checkForUpdates, onUpdateStatus, setupAutoUpdates, stopAutoUpdates } from './updates';
 import { installViewerIpc, openViewerWindowForPath } from './viewer-window';
 import { installViewerProtocol, registerViewerScheme } from './viewer-protocol';
 import {
@@ -242,6 +243,15 @@ else {
             checkUpdates: () => {
                 void checkForUpdates(true);
             },
+        });
+        installUpdateIpc();
+        // 主窗口可能还没创建：状态通过 IPC 拉取，事件只负责实时推送
+        onUpdateStatus((status) => {
+            const win = getMainWindow();
+
+            if (win !== null && !win.isDestroyed()) {
+                win.webContents.send('desktop:update-status', status);
+            }
         });
         setupAutoUpdates();
 

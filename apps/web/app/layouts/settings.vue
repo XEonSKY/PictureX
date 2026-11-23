@@ -6,6 +6,7 @@ import {
     DatabaseOutlined,
     FileImageOutlined,
     PictureOutlined,
+    SyncOutlined,
     ThunderboltOutlined,
     TranslationOutlined,
 } from '@antdv-next/icons';
@@ -22,6 +23,7 @@ const modules = computed(() => [
     { to: '/settings/ai', icon: ThunderboltOutlined, label: t('settings.moduleAi') },
     { to: '/settings/pixiv', icon: PictureOutlined, label: t('settings.modulePixiv') },
     { to: '/settings/models', icon: CloudDownloadOutlined, label: t('settings.moduleModels') },
+    { to: '/settings/update', icon: SyncOutlined, label: t('settings.moduleUpdate') },
 ]);
 
 const activeModule = computed(() => {
