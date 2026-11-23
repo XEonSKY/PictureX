@@ -322,6 +322,13 @@ async function loadFetchStatus(): Promise<void> {
     }
 }
 
+/** 从后台切回时立即刷新补全状态，避免等待下一个轮询周期 */
+function handleVisibility(): void {
+    if (document.visibilityState === 'visible') {
+        void loadFetchStatus();
+    }
+}
+
 async function syncDatabase(): Promise<void> {
     if (syncBusy.value) {
         return;
@@ -597,8 +604,12 @@ onMounted(() => {
     void loadList(true);
     void loadFetchStatus();
     fetchTimer = setInterval(() => {
-        void loadFetchStatus();
+        // 后台标签页暂停 2.5s 轮询；切回前台时立即补一次
+        if (document.visibilityState === 'visible') {
+            void loadFetchStatus();
+        }
     }, 2500);
+    document.addEventListener('visibilitychange', handleVisibility);
     window.addEventListener('keydown', onPreviewKeydown);
 
     if (gridWrap.value) {
@@ -620,6 +631,7 @@ onBeforeUnmount(() => {
         searchTimer = null;
     }
 
+    document.removeEventListener('visibilitychange', handleVisibility);
     window.removeEventListener('keydown', onPreviewKeydown);
     document.body.style.overflow = '';
 
