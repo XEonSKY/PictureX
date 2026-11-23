@@ -161,9 +161,10 @@ macOS 只发布 arm64（Apple Silicon），不再提供 x64 构建。
 - 更新源默认内置为 `https://picturex.xeonsky.com/update/{latest,pre}/`：
   版本号带 `-rc` / `-beta` / `-alpha` 走 `pre`，其余走 `latest`。
   构建时 CI 会按标签设置 `PX_UPDATE_URL`，生成 `latest*.yml` 并把 feed 写进 `app-update.yml`。
-- 更新目录由 Release 工作流同步到 `update-store` 分支，文档站部署时一并发布到
-  `picturex.xeonsky.com/update/...`；`PX_UPDATE_URL` 可在运行时整体覆盖。
-- Windows（NSIS）与 Linux（AppImage）走 blockmap 差量下载；macOS dmg 为整包下载。
+- 更新目录随文档站发布到 `picturex.xeonsky.com/update/...`，只托管 `latest*.yml`；
+  安装包超过 GitHub 100MB 单文件限制，元数据里的下载地址指向 Release 资产。
+  `PX_UPDATE_URL` 可在运行时整体覆盖。
+- Windows（NSIS）走 blockmap 差量下载；Linux AppImage 与 macOS dmg 为整包下载。
 - Windows 签名读取 `WIN_CSC_LINK` / `WIN_CSC_KEY_PASSWORD`，macOS 读取
   `MAC_CSC_LINK` / `MAC_CSC_KEY_PASSWORD`；macOS 公证还需要 `APPLE_ID`、
   `APPLE_APP_SPECIFIC_PASSWORD`、`APPLE_TEAM_ID`。缺少凭据时产物为未签名版本。

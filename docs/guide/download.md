@@ -28,10 +28,11 @@ PictureX 提供 Windows、macOS 与 Linux 安装包，并区分「发行版」�
 - 客户端按当前版本号自动选择：版本号带 `-rc` / `-beta` / `-alpha` 使用 `pre`，其余使用 `latest`。
 - 可用环境变量 `PX_UPDATE_URL` 整体覆盖更新目录（调试或私有部署时使用）。
 - 启动后每 6 小时检查一次，也可通过「帮助 → 检查更新」手动触发。
+- 目录里只有 `latest*.yml` 等元数据；安装包体积超出仓库单文件限制，实际下载地址指向 GitHub Release 资产。
 
 ## 更新行为
 
 1. 发现新版本后在后台**静默预下载**，不打断当前使用。
 2. 下载完成后才弹窗询问是否「立即重启」安装；选择稍后不会安装。
 3. 退出应用时不会静默安装，安装必须由用户确认。
-4. Windows（NSIS）与 Linux（AppImage）使用 blockmap 差量下载；macOS dmg 为整包下载。
+4. Windows（NSIS）使用 blockmap 差量下载；Linux AppImage 与 macOS dmg 为整包下载。
