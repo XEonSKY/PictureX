@@ -89,7 +89,7 @@ jobs:
           "
 
       # 必须在 pnpm install 之前恢复：postinstall 会联网下载 ffmpeg，放后面等于缓存无效
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: node_modules/ffmpeg-static/ffmpeg
           key: ffmpeg-${{ runner.os }}-${{ runner.arch }}-b6.1.1
@@ -98,7 +98,7 @@ jobs:
         run: pnpm install --frozen-lockfile --prefer-offline
 
       # NSIS / dmg 等打包工具链下载缓存
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cache/electron-builder
