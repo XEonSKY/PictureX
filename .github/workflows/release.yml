@@ -112,7 +112,7 @@ jobs:
           # 让 electron-builder 生成 latest*.yml 并把 feed 地址写进 app-update.yml
           PX_UPDATE_URL: https://picturex.xeonsky.com/update/${{ steps.channel.outputs.name }}/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: picturex-${{ matrix.platform }}-${{ matrix.arch }}
           # 只上传安装包与更新元数据；未打包目录含完整 runtime，体积巨大
